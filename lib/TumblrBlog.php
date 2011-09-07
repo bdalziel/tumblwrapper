@@ -1,6 +1,6 @@
 <?php
 
-require('lib/TumblrPost.php');
+require('TumblrPost.php');
 
 class TumblrBlog {
 
@@ -18,7 +18,7 @@ class TumblrBlog {
   public function getPost ($id) {
     $url = $this->getPostsUrl(null, $id);
     $response = $this->executeQuery($url);    
-    return $this->parsePost($response);
+    return $this->parsePosts($response);
   }
 
   public function getPosts ($page = 1) {
@@ -64,7 +64,6 @@ class TumblrBlog {
   protected function getPostsUrl ($page = null, $id = null) {
     $apiUrl = implode('/', array($this->getBaseBlogApiUrl(),
 				 'posts'));
-
     $urlParams = array_merge(array('api_key' => self::TUMBLR_API_KEY), 
 			     (array) $this->getApiPageParams($page),
 			     (array) $this->getApiPostIdParam($id));
@@ -105,7 +104,7 @@ class TumblrBlog {
   }
 
   protected function getBaseHostName () {
-    return $blogShortName . 'tumblr.com';
+    return $this->blogShortName . '.tumblr.com';
   }
 
   protected function executeQuery ($query, $timeout = 10) {

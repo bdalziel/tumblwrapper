@@ -40,9 +40,13 @@ class TumblrPost {
   }
 
   public function toHtml ($h = 3) {
+    $title = $this->getTitle();
+    $date  = $this->getFormattedDate();
+    $url   = '?post_id=' . $this->getId();
+    $body  = $this->getBody();
     return <<<HTML
-<h{$h}>{$this->getTitle()}. <small><a href="{$this->getUrl()}">{$this->getFormattedDate()}</a></small></h{$h}>
-{$this->getBody()}
+<h{$h}>{$title}. <small><a href="{$url}">{$date}</a></small></h{$h}>
+{$body}
 HTML;
   }
 
