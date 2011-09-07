@@ -18,13 +18,22 @@ class TumblrBlog {
   public function getPost ($id) {
     $url = $this->getPostsUrl(null, $id);
     $response = $this->executeQuery($url);    
-    return $this->parsePost(json_decode($response, true));
+    return $this->parsePost($response);
   }
 
   public function getPosts ($page = 1) {
     $url = $this->getPostsUrl($page);
     $response = $this->executeQuery($url);
-    return $this->parsePosts(json_decode($response, true));
+    return $this->parsePosts($response);
+  }
+
+  public function getPageCount () {
+    $url = $this->getBlogInfoUrl();
+    $response = $this->executeQuery($url);
+    if (array_key_exists('blog', $response)) {
+      $data = $data['blog'];
+      return (int) strval($data['posts']);
+    }    
   }
 
   protected function parsePost ($data) {
@@ -33,8 +42,8 @@ class TumblrBlog {
 
   protected function parsePosts ($data) {
     $posts = array();
-    if (array_key_exists('response', $data) && array_key_exists('posts', $data['response'])) {
-      $data = $data['response']['posts'];
+    if (array_key_exists('posts', $data)) {
+      $data = $data['posts'];
       foreach ($data as $post) {
 	$post = $this->parsePost($post);
 	if ($post) {
@@ -45,6 +54,12 @@ class TumblrBlog {
     return $posts;
   }
 
+  protected function getBlogInfoUrl () {
+    $apiUrl = implode('/', array($this->getBaseBlogApiUrl(),
+				 'info'));
+    $urlParams = $this->paramsToString(array('api_key' => self::TUMBLR_API_KEY));
+    return implode('?', array($apiUrl, $urlParams));
+  }
 
   protected function getPostsUrl ($page = null, $id = null) {
     $apiUrl = implode('/', array($this->getBaseBlogApiUrl(),
@@ -104,6 +119,11 @@ class TumblrBlog {
 
     // Todo: Throw exceptions
     if ($httpcode>=200 && $httpcode<300) {
+
+      $data = json_decode($data, true);
+      if (array_key_exists('response', $data)) {
+	$data = $data['response'];
+      }
       return $data;
     }
     return null;
