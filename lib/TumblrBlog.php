@@ -27,6 +27,15 @@ class TumblrBlog {
     return $this->parsePosts($response);
   }
 
+  public function getBlogName () {
+    $url = $this->getBlogInfoUrl();
+    $response = $this->executeQuery($url);
+    if (array_key_exists('blog', $response)) {
+      $data = $response['blog'];
+      return strval($data['title']);
+    }    
+  }
+
   public function getPostCount () {
     $url = $this->getBlogInfoUrl();
     $response = $this->executeQuery($url);
@@ -34,6 +43,10 @@ class TumblrBlog {
       $data = $response['blog'];
       return (int) strval($data['posts']);
     }    
+  }
+
+  public function getUrl () {
+    return "blog.php";
   }
 
   public function getPageCount () {
