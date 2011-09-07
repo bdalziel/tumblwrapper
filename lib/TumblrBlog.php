@@ -27,13 +27,17 @@ class TumblrBlog {
     return $this->parsePosts($response);
   }
 
-  public function getPageCount () {
+  public function getPostCount () {
     $url = $this->getBlogInfoUrl();
     $response = $this->executeQuery($url);
     if (array_key_exists('blog', $response)) {
-      $data = $data['blog'];
+      $data = $response['blog'];
       return (int) strval($data['posts']);
     }    
+  }
+
+  public function getPageCount () {
+    return (int) ceil($this->getPostCount() / self::TUMBLR_PAGE_SIZE);
   }
 
   protected function parsePost ($data) {
@@ -42,7 +46,7 @@ class TumblrBlog {
 
   protected function parsePosts ($data) {
     $posts = array();
-    if (array_key_exists('posts', $data)) {
+    if (is_array($data) && array_key_exists('posts', $data)) {
       $data = $data['posts'];
       foreach ($data as $post) {
 	$post = $this->parsePost($post);

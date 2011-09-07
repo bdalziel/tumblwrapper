@@ -2,6 +2,8 @@
 
 class TumblrPost {
 
+  protected $post;
+
   protected $id;
   protected $date;
   protected $title;
@@ -12,6 +14,8 @@ class TumblrPost {
     $this->date  = $post['timestamp'];
     $this->title = $post['title'];
     $this->body  = $post['body'];
+
+    $this->post  = $post;
   }
 
   public function getId () {
@@ -39,13 +43,28 @@ class TumblrPost {
     return $this->body;
   }
 
+  public function getTags () {
+    return $this->post['tags'];
+  }
+
   public function toHtml ($h = 3) {
     $title = $this->getTitle();
     $date  = $this->getFormattedDate();
     $url   = '?post_id=' . $this->getId();
     $body  = $this->getBody();
     return <<<HTML
-<h{$h}>{$title}. <small><a href="{$url}">{$date}</a></small></h{$h}>
+<h{$h}>{$title}. <small><a href="{$url}">{$date} &rarr;</a></small></h{$h}>
+{$body}
+HTML;
+  }
+
+  public function bodyToHtml ($h = 3) {
+    $title = $this->getTitle();
+    $date  = $this->getFormattedDate();
+    $url   = '?post_id=' . $this->getId();
+    $body  = $this->getBody();
+    return <<<HTML
+<h{$h}><small>{$date}</small></h{$h}>
 {$body}
 HTML;
   }
